@@ -7,18 +7,13 @@ Author: Clara Burgard
 """
 import numpy as np
 import xarray as xr
-#from tqdm.notebook import trange, tqdm
 from tqdm import trange, tqdm
 import glob
 import matplotlib as mpl
-import seaborn as sns
 import datetime
 import time
 
-from basal_melt_neural_networks.constants import *
-import basal_melt_neural_networks.diagnostic_functions as diag
-import basal_melt_neural_networks.data_formatting as dfmt
-import basal_melt_neural_networks.prep_input_data as indat
+import nn_functions.prep_input_data as indat
 
 import sys
 

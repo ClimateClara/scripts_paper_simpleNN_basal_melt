@@ -17,8 +17,7 @@ import sys
 
 import tensorflow as tf
 from tensorflow import keras
-import basal_melt_neural_networks.model_functions as modf
-import basal_melt_neural_networks.prep_input_data as indat
+import nn_functions.model_functions as modf
 
 ######### READ IN OPTIONS
 
@@ -92,68 +91,20 @@ if TS_opt == 'extrap':
     
     data_train_orig_norm = xr.open_dataset(inputpath_CVinput + 'train_data_wholedataset.nc')
     data_val_orig_norm = xr.open_dataset(inputpath_CVinput + 'val_data_wholedataset.nc') 
-    #data_train_addvar1_norm = xr.open_dataset(inputpath_CVinput + 'train_addvar1_CV_noisf'+str(isf_out).zfill(3)+'_notblock'+str(tblock_out).zfill(3)+'.nc')
-    #data_val_addvar1_norm = xr.open_dataset(inputpath_CVinput + 'val_addvar1_CV_noisf'+str(isf_out).zfill(3)+'_notblock'+str(tblock_out).zfill(3)+'.nc')
-    
-    #data_train_norm = xr.merge([data_train_orig_norm[['corrected_isfdraft','theta_in','salinity_in','slope_ice_lon','slope_ice_lat','melt_m_ice_per_y']], 
-    #                            data_train_addvar1_norm[['rel_dGL']]])
-    #data_train_norm = data_train_orig_norm[['corrected_isfdraft','theta_in','salinity_in','slope_ice_lon','slope_ice_lat','isfdraft_conc','melt_m_ice_per_y']]
+
     data_train_norm = data_train_orig_norm[var_list]
-    #data_val_norm = xr.merge([data_val_orig_norm[['corrected_isfdraft','theta_in','salinity_in','slope_ice_lon','slope_ice_lat','melt_m_ice_per_y']], 
-    #                            data_val_addvar1_norm[['rel_dGL']]])
     data_val_norm = data_val_orig_norm[var_list]
 
     
     ## prepare input and target
     y_train_norm = data_train_norm['melt_m_ice_per_y'].sel(norm_method=norm_method).load()
     x_train_norm = data_train_norm.drop_vars(['melt_m_ice_per_y']).sel(norm_method=norm_method).to_array().load()
-    #print('here4')
-    #x_train_norm = data_train_norm[['corrected_isfdraft','water_col_depth','theta_in','salinity_in','theta_bot','salinity_bot']].sel(norm_method=norm_method).to_array().load()
+
     
     y_val_norm = data_val_norm['melt_m_ice_per_y'].sel(norm_method=norm_method).load()
     x_val_norm = data_val_norm.drop_vars(['melt_m_ice_per_y']).sel(norm_method=norm_method).to_array().load()
-    #print('here6')
-    #x_val_norm = data_val_norm[['corrected_isfdraft','water_col_depth','theta_in','salinity_in','theta_bot','salinity_bot']].sel(norm_method=norm_method).to_array().load()
 
-if TS_opt == 'whole':
 
-    
-    ##print(tblock_out)
-    #inputpath_prof = inputpath_data+'WHOLE_PROF_CHUNKS/'
-    #ds_all = xr.open_dataset(inputpath_prof + 'dataframe_allisf_tblocks1to13.nc')
-    #ds_idx = xr.open_dataset(inputpath_prof + 'indexing_allisf_tblocks1to13.nc')
-    #data_train_norm, data_val_norm = indat.prepare_normed_input_data_CV_metricsgiven(tblock_dim, isf_dim, tblock_out, isf_out, TS_opt, inputpath_data, norm_method, ds_all=ds_all, ds_idx=ds_idx)
-    
-    #print('read in data1')
-    data_train_orig_norm = xr.open_dataset(inputpath_CVinput + 'train_data_CV_norm'+norm_method+'_noisf'+str(isf_out).zfill(3)+'_notblock'+str(tblock_out).zfill(3)+'.nc')
-    #print('read in data2')
-    data_val_orig_norm = xr.open_dataset(inputpath_CVinput + 'val_data_CV_norm'+norm_method+'_noisf'+str(isf_out).zfill(3)+'_notblock'+str(tblock_out).zfill(3)+'.nc') 
-
-    T_list = []
-    S_list = []
-    for kk in data_val_orig_norm.keys():
-        #print(kk)
-        if kk[0:2] == 'T_':
-            T_list.append(kk)
-        elif kk[0:2] == 'S_':
-            S_list.append(kk)
-    
-    var_list = ['corrected_isfdraft','slope_ice_lon','slope_ice_lat','melt_m_ice_per_y']
-    var_list[-1:0] = T_list 
-    var_list[-1:0] = S_list 
-    
-    data_train_norm = data_train_orig_norm[var_list]
-    data_val_norm = data_val_orig_norm[var_list]
-    
-    ## prepare input and target
-    #print('prepare data1')
-    y_train_norm = data_train_norm['melt_m_ice_per_y'].load()
-    x_train_norm = data_train_norm.drop_vars(['melt_m_ice_per_y']).to_array().load()
-    
-    #print('prepare data2')
-    y_val_norm = data_val_norm['melt_m_ice_per_y'].load()
-    x_val_norm = data_val_norm.drop_vars(['melt_m_ice_per_y']).to_array().load()
-    
 else:
     print('Sorry, I dont know this option for TS input yet, you need to implement it...')
 
@@ -161,7 +112,7 @@ else:
 ######### TRAIN THE MODEL
 
 input_size = x_train_norm.values.shape[0]
-activ_fct = 'relu' #LeakyReLU
+activ_fct = 'relu' 
 epoch_nb = 100
 batch_siz = 512
 
@@ -198,10 +149,6 @@ timelength = time_end - time_start
 time_end0 = datetime.datetime.now()
 print(time_end0)
 
-#with open(new_path_doc+'info_'+timetag+'.log','a') as file:
-#    file.write('\n Reduce_lr: True')
-#    file.write('\n Early_stop: True')
-#    file.write('\n Training time (in s): '+str(timelength))
 model.save(path_model + 'model_nn_'+mod_size+'_'+exp_name+'_wholedataset_'+str(seed_nb).zfill(2)+'_TS'+TS_opt+'_norm'+norm_method+'.h5')
 
 # convert the history.history dict to a pandas DataFrame:     

@@ -21,11 +21,9 @@ import tensorflow as tf
 from tensorflow import keras
 from contextlib import redirect_stdout
 
-from basal_melt_neural_networks.constants import *
-import basal_melt_neural_networks.diagnostic_functions as diag
-import basal_melt_neural_networks.data_formatting as dfmt
-import basal_melt_neural_networks.postprocessing_functions as pp
-from basal_melt_param.constants import *
+import nn_functions.data_formatting as dfmt
+import nn_functions.postprocessing_functions as pp
+from multimelt.constants import *
 
 #### INPUT STUFF
 
@@ -106,15 +104,9 @@ for tt in range(startyy,endyy):
 
 
         norm_metrics_file = xr.open_dataset(inputpath_CVinput + 'metrics_norm_wholedataset.nc')
-        #norm_metrics_file_addvar1 = xr.open_dataset(inputpath_CVinput + 'metrics_norm_addvar1_CV_noisf'+str(isf_out).zfill(3)+'_notblock'+str(tblock_out).zfill(3)+'.nc')
-        #norm_metrics_file_addvar1 = norm_metrics_file_addvar1.drop('salinity_in')
-        #norm_metrics_file = xr.merge([norm_metrics_file_orig,norm_metrics_file_addvar1])
         norm_metrics = norm_metrics_file.sel(norm_method=norm_method).drop('norm_method').to_dataframe()
 
         df_nrun = pd.read_csv(inputpath_csv + 'dataframe_input_isf'+str(kisf).zfill(3)+'_'+str(tt)+'_'+nemo_run+'.csv',index_col=[0,1])
-        #df_nrun_addvar1 = pd.read_csv(path_orig_data + 'dataframe_addvar1_isf'+str(kisf).zfill(3)+'_'+str(tblock_out).zfill(3)+'.csv',index_col=[0,1,2])
-        #df_nrun_addvar1 = df_nrun_addvar1.drop(['salinity_in'], axis=1)
-        #df_nrun = pd.concat([df_nrun_orig,df_nrun_addvar1],join = 'outer', axis = 1)
 
         nrows = len(df_nrun.index)
         if vv == 'watercolumn':
