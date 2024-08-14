@@ -2,7 +2,7 @@
 Scripts used for the publication "Emulating present and future simulations of melt rates at the base of Antarctic ice shelves with neural networks."
 ===================================================================================================================================================
 
-These are the scripts that were developed and used for the publication: Burgard, C., Jourdain, N. C., Mathiot, P., Smith, R.S., Schäfer, R., Caillet, J., Finn, T. S. and Johnson, J.E.: "Emulating present and future simulations of melt rates at the base of Antarctic ice shelves with neural networks." Journal of Advances in Modeling Earth Systems, https://essopenarchive.org/users/559280/articles/644074-emulating-present-and-future-simulations-of-melt-rates-at-the-base-of-antarctic-ice-shelves-with-neural-networks in press, 2023.
+These are the scripts that were developed and used for the publication: Burgard, C., Jourdain, N. C., Mathiot, P., Smith, R.S., Schäfer, R., Caillet, J., Finn, T. S. and Johnson, J.E.: "Emulating present and future simulations of melt rates at the base of Antarctic ice shelves with neural networks." Journal of Advances in Modeling Earth Systems, https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2023MS003829, JAMES, 2023.
 
 
 Useful functions are grouped in the package ``nn_funcs``. To install them and use them in further scripts, don't forget to run 
